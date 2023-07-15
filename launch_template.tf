@@ -6,7 +6,7 @@ resource "aws_network_interface" "nat" {
 }
 
 resource "aws_eip" "public_ip" {
-  domain             = true
+  domain            = "vpc"
   network_interface = aws_network_interface.nat.id
   tags              = local.tags
 }
