@@ -14,8 +14,7 @@ variable "instance_type" {
   default = "t4g.micro"
 }
 
-variable "private_route_table_id" {
-}
+variable "private_route_table_id" {}
 
 variable "security_groups" {
   type = list(string)
@@ -25,9 +24,9 @@ variable "ami" {
   default = ""
 }
 
-variable "aws_iam_instance_profile" {
-  default = ""
-}
+variable "aws_iam_instance_profile" {}
+
+variable "key_name" {}
 
 variable "internet_access" {
   default = true
