@@ -6,7 +6,7 @@ resource "aws_network_interface" "nat" {
 }
 
 resource "aws_eip" "public_ip" {
-  vpc               = true
+  domain             = true
   network_interface = aws_network_interface.nat.id
   tags              = local.tags
 }
@@ -31,7 +31,7 @@ resource "aws_launch_template" "nat_instance" {
     network_interface_id = aws_network_interface.nat.id
   }
 
-  user_data = file("scripts/provision.sh")
+  user_data = file("${path.module}/scripts/provision.sh")
 
   tag_specifications {
     resource_type = "instance"
