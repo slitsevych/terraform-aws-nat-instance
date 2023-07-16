@@ -98,7 +98,7 @@ locals {
 
   # final construct where we merge route table ids and subnets in one map blocks to use in for_each loops
   rtable_subnets_map = [
-    for route, subnet in zipmap(local.private_routes_map.*.route_id, slice(local.public_subnets_map.*.subnet_id, 0, length(var.private_route_table_ids))) :
+    for route, subnet in zipmap(local.private_rtables_map.*.route_id, slice(local.public_subnets_map.*.subnet_id, 0, length(var.private_route_table_ids))) :
     {
       route_id  = route
       subnet_id = subnet
