@@ -33,11 +33,9 @@ resource "aws_eip" "public_ip" {
 resource "aws_launch_template" "nat_instance" {
   for_each = { for idx, subnet in local.rtable_subnets_map : idx => subnet }
 
-  name_prefix   = "${var.name}-${data.aws_subnet.nat_all[each.key].availability_zone}"
   name_prefix   = "${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}"
   image_id      = local.ami
   instance_type = var.instance_type
-  key_name      = var.key_name
   tags          = local.tags
 
   metadata_options {

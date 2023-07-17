@@ -22,11 +22,6 @@ variable "aws_iam_instance_profile" {
   default     = ""
 }
 
-variable "key_name" {
-  type        = string
-  description = "SSH keypair name for the VPN instance"
-}
-
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(any)
@@ -96,9 +91,12 @@ locals {
     }
   ]
 
+  equal_length = length(var.public_subnet_ids) != length(var.private_route_table_ids) ? min(length(var.private_route_table_ids), length(var.public_subnet_ids)) : null
+
+
   # final construct where we merge route table ids and subnets in one map blocks to use in for_each loops
   rtable_subnets_map = [
-    for route, subnet in zipmap(local.private_rtables_map.*.route_id, slice(local.public_subnets_map.*.subnet_id, 0, length(var.private_route_table_ids))) :
+    for route, subnet in zipmap(slice(local.private_rtables_map.*.route_id, 0, local.equal_length), slice(local.public_subnets_map.*.subnet_id, 0, local.equal_length)) :
     {
       route_id  = route
       subnet_id = subnet
