@@ -90,7 +90,7 @@ locals {
     }
   ]
 
-  equal_length = length(var.public_subnet_ids) != length(var.private_route_table_ids) ? min(length(var.private_route_table_ids), length(var.public_subnet_ids)) : null
+  equal_length = length(var.public_subnet_ids) != length(var.private_route_table_ids) ? min(length(var.private_route_table_ids), length(var.public_subnet_ids)) : length(var.public_subnet_ids)
 
 
   # final construct where we merge route table ids and subnets in one map blocks to use in for_each loops
