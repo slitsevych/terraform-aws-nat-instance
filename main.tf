@@ -11,7 +11,7 @@ resource "aws_network_interface" "nat" {
   source_dest_check = false
   security_groups   = var.security_groups
 
-  tags              = merge(tomap({ "Name" = "eni-${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}" }), var.tags)
+  tags = merge(tomap({ "Name" = "eni-${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}" }), var.tags)
 }
 
 resource "aws_route" "internet" {
@@ -28,7 +28,7 @@ resource "aws_eip" "public_ip" {
   domain            = "vpc"
   network_interface = aws_network_interface.nat[each.key].id
 
-  tags              = merge(tomap({ "Name" = "eip-${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}" }), var.tags)
+  tags = merge(tomap({ "Name" = "eip-${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}" }), var.tags)
 }
 
 resource "aws_launch_template" "nat_instance" {
@@ -38,7 +38,7 @@ resource "aws_launch_template" "nat_instance" {
   image_id      = local.ami
   instance_type = var.instance_type
 
-  tags          = merge(tomap({ "Name" = "lt-${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}" }), var.tags)
+  tags = merge(tomap({ "Name" = "lt-${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}" }), var.tags)
 
   metadata_options {
     http_endpoint = "enabled"
@@ -54,14 +54,14 @@ resource "aws_launch_template" "nat_instance" {
   }
 
   block_device_mappings {
-    device_name = tolist(data.aws_ami.nat.block_device_mappings)[0].device_name   
+    device_name = tolist(data.aws_ami.nat.block_device_mappings)[0].device_name
 
     ebs {
       volume_size = 30
       volume_type = "gp3"
     }
   }
-  
+
   disable_api_stop        = true
   disable_api_termination = true
   ebs_optimized           = true
