@@ -10,7 +10,8 @@ resource "aws_network_interface" "nat" {
   subnet_id         = each.value.subnet_id
   source_dest_check = false
   security_groups   = var.security_groups
-  tags              = local.tags
+
+  tags              = merge(tomap({ "Name" = "eni-${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}" }), var.tags)
 }
 
 resource "aws_route" "internet" {
@@ -21,13 +22,13 @@ resource "aws_route" "internet" {
   network_interface_id   = aws_network_interface.nat[each.key].id
 }
 
-
 resource "aws_eip" "public_ip" {
   for_each = { for idx, subnet in local.rtable_subnets_map : idx => subnet }
 
   domain            = "vpc"
   network_interface = aws_network_interface.nat[each.key].id
-  tags              = local.tags
+
+  tags              = merge(tomap({ "Name" = "eip-${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}" }), var.tags)
 }
 
 resource "aws_launch_template" "nat_instance" {
@@ -36,7 +37,8 @@ resource "aws_launch_template" "nat_instance" {
   name_prefix   = "${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}"
   image_id      = local.ami
   instance_type = var.instance_type
-  tags          = local.tags
+
+  tags          = merge(tomap({ "Name" = "lt-${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}" }), var.tags)
 
   metadata_options {
     http_endpoint = "enabled"
@@ -51,6 +53,19 @@ resource "aws_launch_template" "nat_instance" {
     enabled = true
   }
 
+  block_device_mappings {
+    device_name = tolist(data.aws_ami.nat.block_device_mappings)[0].device_name   
+
+    ebs {
+      volume_size = 30
+      volume_type = "gp3"
+    }
+  }
+  
+  disable_api_stop        = true
+  disable_api_termination = true
+  ebs_optimized           = true
+
   network_interfaces {
     device_index         = 0
     network_interface_id = aws_network_interface.nat[each.key].id
@@ -60,7 +75,7 @@ resource "aws_launch_template" "nat_instance" {
 
   tag_specifications {
     resource_type = "instance"
-    tags          = local.tags
+    tags          = merge(tomap({ "Name" = "${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}" }), var.tags)
   }
 }
 

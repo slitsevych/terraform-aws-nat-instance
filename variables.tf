@@ -75,7 +75,6 @@ data "aws_region" "current" {}
 locals {
   ami                  = var.ami == "" ? data.aws_ami.nat.id : var.ami
   iam_instance_profile = var.aws_iam_instance_profile == "" ? aws_iam_instance_profile.ssm_profile[0].name : var.aws_iam_instance_profile
-  tags                 = merge({ Name = var.name }, var.tags)
 
   # map of public subnets received in var.public_subnet_ids list
   public_subnets_map = [
