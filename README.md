@@ -27,9 +27,9 @@ provider "aws" {
 module "nat-instance" {
   source = "slitsevych/nat-instance/aws"
 
-  public_subnet_ids        = module.vpc.public_subnets
-  private_route_table_ids  = module.vpc.private_route_table_ids
-  security_groups          = [module.security_group_nat.security_group_id]
+  public_subnet_ids        = module.vpc.public_subnets                     # required
+  private_route_table_ids  = module.vpc.private_route_table_ids            # required
+  security_groups          = [module.security_group_nat.security_group_id] # default is [] --> will be created by the module
 
   #name                     = "nat-instance" # default is "nat-instance"
   #instance_type            = "t4g.nano"     # default is "t4g.nano"
@@ -60,7 +60,9 @@ module "nat-instance" {
 
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_security_group_nat"></a> [security\_group\_nat](#module\_security\_group\_nat) | terraform-aws-modules/security-group/aws | 5.1.0 |
 
 ## Resources
 
@@ -89,7 +91,7 @@ No modules.
 | <a name="input_aws_iam_instance_profile"></a> [aws\_iam\_instance\_profile](#input\_aws\_iam\_instance\_profile) | Name of IAM instance profile to assign to EC2 instance | `string` | `""` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | NAT instance type (default to ARM-based) | `string` | `"t4g.nano"` | no |
 | <a name="input_name"></a> [name](#input\_name) | General name for resources | `string` | `"nat-instance"` | no |
-| <a name="input_private_route_table_ids"></a> [private\_route\_table\_ids](#input\_private\_route\_table\_ids) | List of private route table IDs for which we will create NAT rules | `list(string)` | `[]` | no |
+| <a name="input_private_route_table_ids"></a> [private\_route\_table\_ids](#input\_private\_route\_table\_ids) | List of private route table IDs for which we will create NAT rules | `list(string)` | n/a | yes |
 | <a name="input_public_subnet_ids"></a> [public\_subnet\_ids](#input\_public\_subnet\_ids) | List of public subnets ids in which we will create NAT instances | `list(string)` | n/a | yes |
 | <a name="input_security_groups"></a> [security\_groups](#input\_security\_groups) | List of security groups created outside of module to attach | `list(string)` | `[]` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(any)` | `{}` | no |

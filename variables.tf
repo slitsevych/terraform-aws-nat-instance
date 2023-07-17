@@ -36,7 +36,6 @@ variable "public_subnet_ids" {
 variable "private_route_table_ids" {
   type        = list(string)
   description = "List of private route table IDs for which we will create NAT rules"
-  default     = []
 }
 
 variable "security_groups" {
