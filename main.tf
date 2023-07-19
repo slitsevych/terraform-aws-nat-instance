@@ -77,6 +77,10 @@ resource "aws_launch_template" "nat_instance" {
     resource_type = "instance"
     tags          = merge(tomap({ "Name" = "${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}" }), var.tags)
   }
+  
+  lifecycle {
+    ignore_changes = [user_data, image_id]
+  }
 }
 
 resource "aws_autoscaling_group" "nat_instance" {
