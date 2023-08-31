@@ -4,6 +4,18 @@ variable "name" {
   default     = "nat-instance"
 }
 
+variable "environment" {
+  type        = string
+  description = "General name for environment"
+  default     = ""
+}
+
+variable "team_name" {
+  type        = string
+  description = "General name for team"
+  default     = ""
+}
+
 variable "instance_type" {
   type        = string
   description = "NAT instance type (default to ARM-based)"

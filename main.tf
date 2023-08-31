@@ -34,7 +34,7 @@ resource "aws_eip" "public_ip" {
 resource "aws_launch_template" "nat_instance" {
   for_each = { for idx, subnet in local.rtable_subnets_map : idx => subnet }
 
-  name_prefix   = "${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}"
+  name          = "${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}"
   image_id      = local.ami
   instance_type = var.instance_type
 
@@ -83,10 +83,32 @@ resource "aws_launch_template" "nat_instance" {
   }
 }
 
+locals {
+  autoscaling_group_tags = {
+    default = [
+      {
+        key                 = "Env"
+        value               = var.environment
+        propagate_at_launch = true
+      },
+      {
+        key                 = "Team"
+        value               = var.team_name
+        propagate_at_launch = true
+      },
+      {
+        key                 = "Terraform"
+        value               = "true"
+        propagate_at_launch = true
+      },
+    ]
+  }
+}
+
 resource "aws_autoscaling_group" "nat_instance" {
   for_each = { for idx, subnet in local.rtable_subnets_map : idx => subnet }
 
-  name_prefix        = "${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}"
+  name               = "${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}"
   desired_capacity   = 1
   max_size           = 1
   min_size           = 1
@@ -101,6 +123,15 @@ resource "aws_autoscaling_group" "nat_instance" {
     key                 = "Name"
     value               = "${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}"
     propagate_at_launch = true
+  }
+
+  dynamic "tag" {
+    for_each = local.autoscaling_group_tags
+    content {
+      key                 = tag.value.key
+      propagate_at_launch = tag.value.propagate_at_launch
+      value               = tag.value.value
+    }
   }
 
   lifecycle {
