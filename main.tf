@@ -84,8 +84,7 @@ resource "aws_launch_template" "nat_instance" {
 }
 
 locals {
-  autoscaling_group_tags = {
-    default = [
+    autoscaling_group_tags = [
       {
         key                 = "Env"
         value               = var.environment
@@ -100,9 +99,8 @@ locals {
         key                 = "Terraform"
         value               = "true"
         propagate_at_launch = true
-      },
+      }
     ]
-  }
 }
 
 resource "aws_autoscaling_group" "nat_instance" {
