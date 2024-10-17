@@ -57,7 +57,7 @@ resource "aws_launch_template" "nat_instance" {
     device_name = tolist(data.aws_ami.nat.block_device_mappings)[0].device_name
 
     ebs {
-      volume_size = 30
+      volume_size = var.instance_volume_size
       volume_type = "gp3"
     }
   }
