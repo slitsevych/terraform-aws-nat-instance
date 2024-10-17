@@ -78,9 +78,9 @@ resource "aws_launch_template" "nat_instance" {
     tags          = merge(tomap({ "Name" = "${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}" }), var.tags)
   }
   
-  lifecycle {
-    ignore_changes = [user_data, image_id]
-  }
+  # lifecycle {
+  #   ignore_changes = [user_data, image_id]
+  # }
 }
 
 locals {
@@ -115,6 +115,10 @@ resource "aws_autoscaling_group" "nat_instance" {
   launch_template {
     id      = aws_launch_template.nat_instance[each.key].id
     version = aws_launch_template.nat_instance[each.key].latest_version
+  }
+
+  instance_refresh {
+    strategy = "Rolling"
   }
 
   tag {
