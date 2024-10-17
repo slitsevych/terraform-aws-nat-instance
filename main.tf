@@ -57,7 +57,7 @@ resource "aws_launch_template" "nat_instance" {
     device_name = tolist(data.aws_ami.nat.block_device_mappings)[0].device_name
 
     ebs {
-      volume_size = 30
+      volume_size = var.instance_volume_size
       volume_type = "gp3"
     }
   }
@@ -78,9 +78,9 @@ resource "aws_launch_template" "nat_instance" {
     tags          = merge(tomap({ "Name" = "${var.name}-${substr(data.aws_subnet.nat_all[each.key].availability_zone, -2, -1)}" }), var.tags)
   }
   
-  lifecycle {
-    ignore_changes = [user_data, image_id]
-  }
+  # lifecycle {
+  #   ignore_changes = [user_data, image_id]
+  # }
 }
 
 locals {
@@ -115,6 +115,10 @@ resource "aws_autoscaling_group" "nat_instance" {
   launch_template {
     id      = aws_launch_template.nat_instance[each.key].id
     version = aws_launch_template.nat_instance[each.key].latest_version
+  }
+
+  instance_refresh {
+    strategy = "Rolling"
   }
 
   tag {

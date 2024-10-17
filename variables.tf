@@ -22,6 +22,12 @@ variable "instance_type" {
   default     = "t4g.nano"
 }
 
+variable "instance_volume_size" {
+  type        = number
+  description = "Default volume size for NAT instances"
+  default     = 8
+}
+
 variable "ami" {
   description = "AMI for nat instance"
   type        = string
